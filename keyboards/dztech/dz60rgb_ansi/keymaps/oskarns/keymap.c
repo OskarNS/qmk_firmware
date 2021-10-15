@@ -3,24 +3,17 @@
 #define MODS_PRESSED(btn)  (get_mods() & (MOD_BIT(KC_L##btn)|MOD_BIT(KC_R##btn)))
 
 bool bnumlock = false;
+bool bcapslock = false;
 
 enum custom_keycodes {
   EACUTE = SAFE_RANGE,
   ALT_F4
 };
 
-│char *alt_codes[][2] = {
+char *alt_codes[][2] = {
     {
-        SS_LALT(SS_TAP(X_KP_0)SS_TAP(X_KP_2)SS_TAP(X_KP_2)SS_TAP(X_KP_9)), // Alt+0229 → å
-        SS_LALT(SS_TAP(X_KP_0)SS_TAP(X_KP_1)SS_TAP(X_KP_9)SS_TAP(X_KP_7)), // Alt+0197 → Å
-    },
-    {
-        SS_LALT(SS_TAP(X_KP_0)SS_TAP(X_KP_2)SS_TAP(X_KP_2)SS_TAP(X_KP_8)), // Alt+0228 → ä
-        SS_LALT(SS_TAP(X_KP_0)SS_TAP(X_KP_1)SS_TAP(X_KP_9)SS_TAP(X_KP_6)), // Alt+0196 → Ä
-    },
-    {
-        SS_LALT(SS_TAP(X_KP_0)SS_TAP(X_KP_2)SS_TAP(X_KP_4)SS_TAP(X_KP_6)), // Alt+0246 → ö
-        SS_LALT(SS_TAP(X_KP_0)SS_TAP(X_KP_2)SS_TAP(X_KP_1)SS_TAP(X_KP_4)), // Alt+0214 → Ö
+        SS_LALT(SS_TAP(X_KP_1)SS_TAP(X_KP_3)SS_TAP(X_KP_0)), // Alt+130 → é
+        SS_LALT(SS_TAP(X_KP_1)SS_TAP(X_KP_4)SS_TAP(X_KP_4)), // Alt+144 → É
     },
 };
 
@@ -80,7 +73,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         SET_WHETHER(MODS_PRESSED(ALT), KC_4, KC_F4);
         return false;
         break;
-    case SWE_OE: {
+    case EACUTE: {
         if (record->event.pressed) {
             bool flip = false;
             if(!bnumlock) {
@@ -88,8 +81,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 bnumlock = true;
                 flip = true;
             }
-            uint16_t index = keycode - SWE_AA;
-            uint8_t shift = get_mods() & (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT));
+            uint16_t index = keycode - EACUTE;
+            bool shift = (bool)(get_mods() & (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)));
+            if (bcapslock) shift = !shift;
 
             unregister_code(KC_LSFT);
             unregister_code(KC_RSFT);
@@ -107,5 +101,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     default:
         return true;
+    }
+}
+
+void led_set_user(uint8_t usb_led) {
+    if (usb_led & (1 << USB_LED_NUM_LOCK)) {
+        bnumlock = true;
+    } else {
+        bnumlock = false;
+    }
+
+    if (usb_led & (1 << USB_LED_CAPS_LOCK)) {
+        bcapslock = true;
+    } else {
+        bcapslock = false;
+    }
+
+    if (usb_led & (1 << USB_LED_SCROLL_LOCK)) {
+    } else {
+    }
+
+    if (usb_led & (1 << USB_LED_COMPOSE)) {
+    } else {
+    }
+
+    if (usb_led & (1 << USB_LED_KANA)) {
+    } else {
     }
 }
