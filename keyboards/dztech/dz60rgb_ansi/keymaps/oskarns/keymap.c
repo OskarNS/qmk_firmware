@@ -88,7 +88,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_code(KC_LSFT);
             unregister_code(KC_RSFT);
 
-            send_string(alt_codes[index][(bool)shift]);
+            send_string(alt_codes[index][shift]);
 
             if (shift & MOD_BIT(KC_LSFT)) register_code(KC_LSFT);
             if (shift & MOD_BIT(KC_RSFT)) register_code(KC_RSFT);
