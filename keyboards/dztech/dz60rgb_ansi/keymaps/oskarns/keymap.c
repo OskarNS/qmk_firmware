@@ -82,16 +82,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 flip = true;
             }
             uint16_t index = keycode - EACUTE;
-            bool shift = (bool)(get_mods() & (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)));
-            if (bcapslock) shift = !shift;
+            bool lshift = (bool)(get_mods() & (MOD_BIT(KC_LSFT)));
+            bool rshift = (bool)(get_mods() & (MOD_BIT(KC_RSFT)));
+            bool shift = lshift || rshift;
 
-            unregister_code(KC_LSFT);
-            unregister_code(KC_RSFT);
+            if (lshift) unregister_code(KC_LSFT);
+            if (rshift) unregister_code(KC_RSFT);
 
-            send_string(alt_codes[index][shift]);
+            send_string(alt_codes[index][shift ^ bcapslock]);
 
-            if (shift & MOD_BIT(KC_LSFT)) register_code(KC_LSFT);
-            if (shift & MOD_BIT(KC_RSFT)) register_code(KC_RSFT);
+            if (lshift) register_code(KC_LSFT);
+            if (rshift) register_code(KC_RSFT);
             if(flip) {
                 tap_code(KC_NLCK);
                 bnumlock = !bnumlock;
