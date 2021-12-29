@@ -7,6 +7,7 @@ bool bcapslock = false;
 
 enum custom_keycodes {
   EACUTE = SAFE_RANGE,
+  UUMLAUT,
   ALT_F4
 };
 
@@ -14,6 +15,10 @@ char *alt_codes[][2] = {
     {
         SS_LALT(SS_TAP(X_KP_1)SS_TAP(X_KP_3)SS_TAP(X_KP_0)), // Alt+130 → é
         SS_LALT(SS_TAP(X_KP_1)SS_TAP(X_KP_4)SS_TAP(X_KP_4)), // Alt+144 → É
+    },
+    {
+        SS_LALT(SS_TAP(X_KP_1)SS_TAP(X_KP_2)SS_TAP(X_KP_9)), // Alt+129 → ü
+        SS_LALT(SS_TAP(X_KP_1)SS_TAP(X_KP_5)SS_TAP(X_KP_4)), // Alt+154 → Ü
     },
 };
 
@@ -53,7 +58,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [2] = LAYOUT_60_ansi(
         KC_ESC, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,
-        _______, KC_MPLY, KC_UP,   EACUTE, KC_PGUP, _______, _______, _______, KC_UP,  _______, RALT(KC_PSCR), KC_F15, KC_HOME, KC_END,
+        _______, KC_MPLY, KC_UP,   EACUTE, KC_PGUP, _______, _______, UUMLAUT, KC_UP,  _______, RALT(KC_PSCR), KC_F15, KC_HOME, KC_END,
         KC_CAPS,    KC_LEFT, KC_DOWN, KC_RIGHT, KC_PGDN, _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, KC_F13,  KC_F14,          _______,
         _______,          KC_VOLD, KC_VOLU, KC_GRV, _______, _______, _______, HYPR(KC_W), _______, _______,  _______,          _______,
         _______, _______, _______,                            TG(1),                              KC_RALT, _______, _______, _______
@@ -69,39 +74,40 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-    case ALT_F4:
-        SET_WHETHER(MODS_PRESSED(ALT), KC_4, KC_F4);
-        return false;
-        break;
-    case EACUTE: {
-        if (record->event.pressed) {
-            bool flip = false;
-            if(!bnumlock) {
-                tap_code(KC_NLCK);
-                bnumlock = true;
-                flip = true;
-            }
-            uint16_t index = keycode - EACUTE;
-            bool lshift = (bool)(get_mods() & (MOD_BIT(KC_LSFT)));
-            bool rshift = (bool)(get_mods() & (MOD_BIT(KC_RSFT)));
-            bool shift = lshift || rshift;
-
-            if (lshift) unregister_code(KC_LSFT);
-            if (rshift) unregister_code(KC_RSFT);
-
-            send_string(alt_codes[index][shift ^ bcapslock]);
-
-            if (lshift) register_code(KC_LSFT);
-            if (rshift) register_code(KC_RSFT);
-            if(flip) {
-                tap_code(KC_NLCK);
-                bnumlock = !bnumlock;
-            }
+        case ALT_F4:
+            SET_WHETHER(MODS_PRESSED(ALT), KC_4, KC_F4);
             return false;
+            break;
+        case UUMLAUT:
+        case EACUTE: {
+            if (record->event.pressed) {
+                bool flip = false;
+                if(!bnumlock) {
+                    tap_code(KC_NLCK);
+                    bnumlock = true;
+                    flip = true;
+                }
+                uint16_t index = keycode - EACUTE;
+                bool lshift = (bool)(get_mods() & (MOD_BIT(KC_LSFT)));
+                bool rshift = (bool)(get_mods() & (MOD_BIT(KC_RSFT)));
+                bool shift = lshift || rshift;
+
+                if (lshift) unregister_code(KC_LSFT);
+                if (rshift) unregister_code(KC_RSFT);
+
+                send_string(alt_codes[index][shift ^ bcapslock]);
+
+                if (lshift) register_code(KC_LSFT);
+                if (rshift) register_code(KC_RSFT);
+                if(flip) {
+                    tap_code(KC_NLCK);
+                    bnumlock = !bnumlock;
+                }
+                return false;
+            }
         }
-    }
-    default:
-        return true;
+        default:
+            return true;
     }
 }
 
