@@ -111,6 +111,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case KC_LSPO:
+        case KC_RSPC:
+            tap_code(KC_NLCK);
+            return TAPPING_TERM / 4;
+        default:
+            return TAPPING_TERM;
+    }
+}
+
 void led_set_user(uint8_t usb_led) {
     if (usb_led & (1 << USB_LED_NUM_LOCK)) {
         bnumlock = true;
