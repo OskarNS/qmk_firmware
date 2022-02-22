@@ -72,11 +72,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     )
 };
 
+static uint16_t prev = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    bool returnVal = true;
     switch (keycode) {
+        case KC_LSPO:
+        case KC_RSPC:
+            if (!record->event.pressed) {
+                if (prev == ALT_F4){
+                    unregister_code(KC_LSFT);
+                    unregister_code(KC_RSFT);
+                    returnVal = false;
+                    break;
+                }
+            }
+            returnVal = true;
+            break;
         case ALT_F4:
             SET_WHETHER(MODS_PRESSED(ALT), KC_4, KC_F4);
-            return false;
+            returnVal = false;
             break;
         case UUMLAUT:
         case EACUTE: {
@@ -103,23 +117,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     tap_code(KC_NLCK);
                     bnumlock = !bnumlock;
                 }
-                return false;
+                returnVal = false;
+                break;
             }
         }
-        default:
-            return true;
     }
-}
 
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-    switch (keycode) {
-        case KC_LSPO:
-        case KC_RSPC:
-            tap_code(KC_NLCK);
-            return TAPPING_TERM / 4;
-        default:
-            return TAPPING_TERM;
-    }
+    prev = keycode;
+    return returnVal;
 }
 
 void led_set_user(uint8_t usb_led) {
