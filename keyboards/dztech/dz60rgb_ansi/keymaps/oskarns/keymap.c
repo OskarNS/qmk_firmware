@@ -1,14 +1,11 @@
 #include QMK_KEYBOARD_H
 
-#define MODS_PRESSED(btn)  (get_mods() & (MOD_BIT(KC_L##btn)|MOD_BIT(KC_R##btn)))
-
 bool bnumlock = false;
 bool bcapslock = false;
 
 enum custom_keycodes {
   EACUTE = SAFE_RANGE,
   UUMLAUT,
-  ALT_F4
 };
 
 char *alt_codes[][2] = {
@@ -22,28 +19,9 @@ char *alt_codes[][2] = {
     },
 };
 
-#define SET_WHETHER(mask, btn1, btn2) \
-if (record->event.pressed) {          \
-    if (mask) {                       \
-        add_key(btn2);                \
-        send_keyboard_report();       \
-    } else {                          \
-        add_key(btn1);                \
-        send_keyboard_report();       \
-    }                                 \
-} else {                              \
-    if (mask) {                       \
-        del_key(btn2);                \
-        send_keyboard_report();       \
-    } else {                          \
-        del_key(btn1);                \
-        send_keyboard_report();       \
-    }                                 \
-}
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT_60_ansi(
-        KC_GESC,        KC_1,    KC_2,    KC_3,    ALT_F4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,
+        KC_GESC,        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC,
         KC_TAB,         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS,
         MO(2), KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,
         KC_LSPO,                 KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,          KC_RSPC,
@@ -72,25 +50,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     )
 };
 
-static uint16_t prev = 0;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     bool returnVal = true;
     switch (keycode) {
         case KC_LSPO:
         case KC_RSPC:
             if (!record->event.pressed) {
-                if (prev == ALT_F4){
-                    unregister_code(KC_LSFT);
-                    unregister_code(KC_RSFT);
-                    returnVal = false;
-                    break;
-                }
+                unregister_code(KC_LSFT);
+                unregister_code(KC_RSFT);
+                returnVal = false;
+                break;
             }
             returnVal = true;
-            break;
-        case ALT_F4:
-            SET_WHETHER(MODS_PRESSED(ALT), KC_4, KC_F4);
-            returnVal = false;
             break;
         case UUMLAUT:
         case EACUTE: {
@@ -123,7 +94,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
     }
 
-    prev = keycode;
     return returnVal;
 }
 
