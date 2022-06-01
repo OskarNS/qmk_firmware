@@ -39,30 +39,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, KC_MPLY, KC_UP,   EACUTE, KC_PGUP, _______, _______, UUMLAUT, KC_UP,  _______, RALT(KC_PSCR), KC_F15, KC_HOME, KC_END,
         KC_CAPS,    KC_LEFT, KC_DOWN, KC_RIGHT, KC_PGDN, _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, KC_F13,  KC_F14,          _______,
         _______,          KC_VOLD, KC_VOLU, KC_GRV, _______, _______, _______, HYPR(KC_W), _______, _______,  _______,          _______,
-        _______, _______, _______,                            TG(1),                              KC_RALT, _______, _______, _______
+        _______, _______, _______,                            KC_SPC,                              KC_RALT, _______, _______, _______
     ),
     [3] = LAYOUT_60_ansi(
         RESET, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,
         _______, RGB_TOG, _______, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, RGB_MOD, _______, _______, KC_MPRV, KC_MNXT,
         _______, _______, _______, _______, _______, _______, _______, _______, RGB_SPI, RGB_SPD, _______, _______,          _______,
         _______,          _______, _______, _______, _______, _______, NK_ON,   NK_OFF, _______, _______, _______,          _______,
-        _______, _______, _______,                            _______,                            _______, _______, _______, _______
+        _______, _______, _______,                            TG(1),                            _______, _______, _______, _______
     )
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     bool returnVal = true;
     switch (keycode) {
-        case KC_LSPO:
-        case KC_RSPC:
-            if (!record->event.pressed) {
-                unregister_code(KC_LSFT);
-                unregister_code(KC_RSFT);
-                returnVal = false;
-                break;
-            }
-            returnVal = true;
-            break;
         case UUMLAUT:
         case EACUTE: {
             if (record->event.pressed) {
