@@ -1,0 +1,6 @@
+#pragma once
+
+#undef DEBOUNCE
+#define DEBOUNCE 15
+#define GRAVE_ESC_ALT_OVERRIDE
+#define GRAVE_ESC_CTRL_OVERRIDE
